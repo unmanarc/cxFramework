@@ -4,9 +4,11 @@ CONFIG += ordered
 SUBDIRS += cxThreads
 SUBDIRS += cxMem
 !win32:SUBDIRS += cxServices
-SUBDIRS += cxLogs
+!win32:SUBDIRS += cxLogs
 SUBDIRS += cxNetwork
 SUBDIRS += cxProtocols
 SUBDIRS += cxAuth
 SUBDIRS += cxJAsyncRPC
+SUBDIRS += cxScripts
+
 
