@@ -3,6 +3,9 @@
 #include <string>
 #include <algorithm>
 
+#include <boost/algorithm/string/predicate.hpp>
+
+
 using namespace std;
 
 AtomicExpression::AtomicExpression(std::vector<string> *staticTexts) : left(staticTexts), right(staticTexts)
@@ -20,29 +23,69 @@ bool AtomicExpression::compile(std::string expr)
         evalOperator=EVAL_OPERATOR_EQUAL;
         negativeExpression=false;
     }
-    else if (substractExpressions("^(?<LEFT_EXPR>[^\\! ]*)\\!\\=(?<RIGHT_EXPR>[^ ]*)$"))
+    else if (substractExpressions("^(?<LEFT_EXPR>[^\\! ]*)\\!\\=\\=(?<RIGHT_EXPR>[^ ]*)$"))
     {
         evalOperator=EVAL_OPERATOR_EQUAL;
         negativeExpression=true;
     }
-    else if (substractExpressions("^(?<LEFT_EXPR>[^\\~ ]*)\\~\\=(?<RIGHT_EXPR>[^ ]*)$"))
+    else if (substractExpressions("^(?<LEFT_EXPR>[^\\= ]*)\\=I\\=(?<RIGHT_EXPR>[^ ]*)$"))
+    {
+        evalOperator=EVAL_OPERATOR_EQUAL_ICASE;
+        negativeExpression=false;
+    }
+    else if (substractExpressions("^(?<LEFT_EXPR>[^\\! ]*)\\!\\=I\\=(?<RIGHT_EXPR>[^ ]*)$"))
+    {
+        evalOperator=EVAL_OPERATOR_EQUAL_ICASE;
+        negativeExpression=true;
+    }
+    else if (substractExpressions("^(?<LEFT_EXPR>[^\\= ]*)\\=RE\\=(?<RIGHT_EXPR>[^ ]*)$"))
     {
         evalOperator=EVAL_OPERATOR_REGEX;
         negativeExpression=false;
     }
-    else if (substractExpressions("^(?<LEFT_EXPR>[^\\! ]*)\\!\\~\\=(?<RIGHT_EXPR>[^ ]*)$"))
+    else if (substractExpressions("^(?<LEFT_EXPR>[^\\! ]*)\\!\\=RE\\=(?<RIGHT_EXPR>[^ ]*)$"))
     {
         evalOperator=EVAL_OPERATOR_REGEX;
         negativeExpression=true;
     }
-    else if (substractExpressions("^(?<LEFT_EXPR>[^\\% ]*)\\%\\=(?<RIGHT_EXPR>[^ ]*)$"))
+    else if (substractExpressions("^(?<LEFT_EXPR>[^\\= ]*)\\=C\\=(?<RIGHT_EXPR>[^ ]*)$"))
     {
         evalOperator=EVAL_OPERATOR_CONTAIN;
         negativeExpression=false;
     }
-    else if (substractExpressions("^(?<LEFT_EXPR>[^\\! ]*)\\!\\%\\=(?<RIGHT_EXPR>[^ ]*)$"))
+    else if (substractExpressions("^(?<LEFT_EXPR>[^\\! ]*)\\!\\=C\\=(?<RIGHT_EXPR>[^ ]*)$"))
     {
         evalOperator=EVAL_OPERATOR_CONTAIN;
+        negativeExpression=true;
+    }
+    else if (substractExpressions("^(?<LEFT_EXPR>[^\\= ]*)\\=CI\\=(?<RIGHT_EXPR>[^ ]*)$"))
+    {
+        evalOperator=EVAL_OPERATOR_CONTAIN_ICASE;
+        negativeExpression=false;
+    }
+    else if (substractExpressions("^(?<LEFT_EXPR>[^\\! ]*)\\!\\=CI\\=(?<RIGHT_EXPR>[^ ]*)$"))
+    {
+        evalOperator=EVAL_OPERATOR_CONTAIN_ICASE;
+        negativeExpression=true;
+    }
+    else if (substractExpressions("^(?<LEFT_EXPR>[^\\= ]*)\\=SW\\=(?<RIGHT_EXPR>[^ ]*)$"))
+    {
+        evalOperator=EVAL_OPERATOR_STARTSWITH;
+        negativeExpression=false;
+    }
+    else if (substractExpressions("^(?<LEFT_EXPR>[^\\! ]*)\\!\\=SW\\=(?<RIGHT_EXPR>[^ ]*)$"))
+    {
+        evalOperator=EVAL_OPERATOR_STARTSWITH;
+        negativeExpression=true;
+    }
+    else if (substractExpressions("^(?<LEFT_EXPR>[^\\= ]*)\\=SWI\\=(?<RIGHT_EXPR>[^ ]*)$"))
+    {
+        evalOperator=EVAL_OPERATOR_STARTSWITH_ICASE;
+        negativeExpression=false;
+    }
+    else if (substractExpressions("^(?<LEFT_EXPR>[^\\! ]*)\\!\\=SWI\\=(?<RIGHT_EXPR>[^ ]*)$"))
+    {
+        evalOperator=EVAL_OPERATOR_STARTSWITH_ICASE;
         negativeExpression=true;
     }
     else
@@ -64,6 +107,94 @@ bool AtomicExpression::evaluate(const Json::Value &values)
     {
     case EVAL_OPERATOR_UNDEFINED:
         return calcNegative(false);
+    case EVAL_OPERATOR_STARTSWITH:
+        for ( const std::string & lvalue : lvalues  )
+        {
+            for ( const std::string & rvalue : rvalues  )
+            {
+                if ( boost::starts_with(lvalue,rvalue) )
+                {
+                    return calcNegative(true);
+                }
+            }
+        }
+        return calcNegative( false );
+    case EVAL_OPERATOR_STARTSWITH_ICASE:
+        for ( const std::string & lvalue : lvalues  )
+        {
+            for ( const std::string & rvalue : rvalues  )
+            {
+                if ( boost::istarts_with(lvalue,rvalue) )
+                {
+                    return calcNegative(true);
+                }
+            }
+        }
+        return calcNegative( false );
+    case EVAL_OPERATOR_EQUAL_ICASE:
+        for ( const std::string & lvalue : lvalues  )
+        {
+            for ( const std::string & rvalue : rvalues  )
+            {
+                if ( boost::iequals(lvalue,rvalue) )
+                {
+                    return calcNegative(true);
+                }
+            }
+        }
+        return calcNegative( false );
+    case EVAL_OPERATOR_EQUAL:
+        for ( const std::string & rvalue : rvalues  )
+        {
+            if (lvalues.find(rvalue) != lvalues.end())
+                return calcNegative(true);
+        }
+        return calcNegative(false);
+    case EVAL_OPERATOR_CONTAIN:
+        for ( const std::string & lvalue : lvalues  )
+        {
+            for ( const std::string & rvalue : rvalues  )
+            {
+                if ( boost::contains(lvalue,rvalue) )
+                {
+                    return calcNegative(true);
+                }
+            }
+        }
+        return calcNegative( false );
+    case EVAL_OPERATOR_CONTAIN_ICASE:
+        for ( const std::string & lvalue : lvalues  )
+        {
+            for ( const std::string & rvalue : rvalues  )
+            {
+                if ( boost::icontains(lvalue,rvalue) )
+                {
+                    return calcNegative(true);
+                }
+            }
+        }
+        return calcNegative( false );
+    case EVAL_OPERATOR_REGEX:
+        boost::cmatch what;
+        // Regex, any of.
+        for ( const std::string & lvalue : lvalues )
+        {
+            if(right.getRegexp() && boost::regex_match(lvalue.c_str(), what, *right.getRegexp()))
+            {
+                return calcNegative(true);
+            }
+        }
+        return calcNegative(false);
+    }
+
+    /*
+
+    switch (evalOperator)
+    {
+    case EVAL_OPERATOR_UNDEFINED:
+        return calcNegative(false);
+    case EVAL_OPERATOR_STARTSWITH:
+        return calcNegative( lvalues == rvalues );
     case EVAL_OPERATOR_EQUAL:
         return calcNegative( lvalues == rvalues );
     case EVAL_OPERATOR_CONTAIN:
@@ -84,7 +215,7 @@ bool AtomicExpression::evaluate(const Json::Value &values)
         }
         return calcNegative(false);
     }
-
+*/
     return calcNegative(false);
 }
 
