@@ -17,12 +17,15 @@ public:
     JSONExprEval(const std::string & expr, std::vector<std::string> * staticTexts, bool negativeExpression);
     ~JSONExprEval();
 
+    bool compile( std::string expr );
     bool evaluate( const Json::Value & values );
 
     std::string getLastCompilerError() const;
 
+
+    bool getIsCompiled() const;
+
 private:
-    bool compile( std::string expr );
 
     bool calcNegative(bool r);
 
@@ -40,6 +43,8 @@ private:
 
     bool staticTextsOwner;
     bool negativeExpression;
+
+    bool isCompiled;
 
     eEvalMode evalMode;
 };

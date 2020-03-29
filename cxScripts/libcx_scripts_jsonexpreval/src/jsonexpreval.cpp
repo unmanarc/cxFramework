@@ -14,6 +14,7 @@ JSONExprEval::JSONExprEval()
     negativeExpression = false;
     staticTextsOwner = false;
     staticTexts = nullptr;
+    isCompiled = false;
     evalMode = EVAL_MODE_UNDEFINED;
 }
 
@@ -33,7 +34,7 @@ JSONExprEval::JSONExprEval(const std::string &expr)
     negativeExpression = false;
     staticTextsOwner = false;
     staticTexts = nullptr; // create on compile.
-    compile(expr);
+    isCompiled = compile(expr);
 }
 
 JSONExprEval::JSONExprEval(const string &expr, std::vector<string> *staticTexts, bool negativeExpression)
@@ -41,7 +42,7 @@ JSONExprEval::JSONExprEval(const string &expr, std::vector<string> *staticTexts,
     this->negativeExpression = negativeExpression;
     staticTextsOwner = false;
     this->staticTexts = staticTexts;
-    compile(expr);
+    isCompiled = compile(expr);
 }
 
 bool JSONExprEval::compile(std::string expr)
@@ -267,6 +268,11 @@ size_t JSONExprEval::detectSubExpr(string &expr, size_t start)
         }
     }
     return expr.size();
+}
+
+bool JSONExprEval::getIsCompiled() const
+{
+    return isCompiled;
 }
 
 std::string JSONExprEval::getLastCompilerError() const
