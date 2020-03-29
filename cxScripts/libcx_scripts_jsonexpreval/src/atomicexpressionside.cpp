@@ -48,6 +48,7 @@ string AtomicExpressionSide::getExpr() const
 void AtomicExpressionSide::setExpr(const string &value)
 {
     expr = value;
+    boost::trim(expr);
 }
 
 set<string> AtomicExpressionSide::resolve(const Json::Value &v, bool resolveRegex, bool ignoreCase)

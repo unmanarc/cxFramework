@@ -30,19 +30,19 @@ bool AtomicExpression::compile(std::string expr)
     }
     this->expr = expr;
 
-    if (substractExpressions("^IS_EQUAL\\((?<LEFT_EXPR>[^\\, ]+),(?<RIGHT_EXPR>[^ \\)]+)\\)$"))
+    if (substractExpressions("^IS_EQUAL\\((?<LEFT_EXPR>[^,]+),(?<RIGHT_EXPR>[^\\)]+)\\)$"))
     {
         evalOperator=EVAL_OPERATOR_ISEQUAL;
     }
-    else if (substractExpressions("^REGEX_MATCH\\((?<LEFT_EXPR>[^\\, ]+),(?<RIGHT_EXPR>[^ \\)]+)\\)$"))
+    else if (substractExpressions("^REGEX_MATCH\\((?<LEFT_EXPR>[^,]+),(?<RIGHT_EXPR>[^\\)]+)\\)$"))
     {
         evalOperator=EVAL_OPERATOR_REGEXMATCH;
     }
-    else if (substractExpressions("^CONTAINS\\((?<LEFT_EXPR>[^\\, ]+),(?<RIGHT_EXPR>[^ \\)]+)\\)$"))
+    else if (substractExpressions("^CONTAINS\\((?<LEFT_EXPR>[^,]+),(?<RIGHT_EXPR>[^\\)]+)\\)$"))
     {
         evalOperator=EVAL_OPERATOR_CONTAINS;
     }
-    else if (substractExpressions("^STARTS_WITH\\((?<LEFT_EXPR>[^\\, ]+),(?<RIGHT_EXPR>[^ \\)]+)\\)$"))
+    else if (substractExpressions("^STARTS_WITH\\((?<LEFT_EXPR>[^,]+),(?<RIGHT_EXPR>[^\\)]+)\\)$"))
     {
         evalOperator=EVAL_OPERATOR_STARTSWITH;
     }
