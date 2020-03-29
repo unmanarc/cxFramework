@@ -98,9 +98,13 @@ bool JSONExprEval::compile(std::string expr)
     }
 
     // detect/compile sub expressions
-    int dsub;
-    while ((dsub=detectSubExpr(expr))==0) {}
-    if (dsub == -1)
+
+    size_t sePos = 0;
+    while ((sePos=detectSubExpr(expr,sePos))!=expr.size() && sePos!=(expr.size()+1))
+    {
+    }
+
+    if (sePos == (expr.size()+1))
     {
         lastError = "bad parenthesis balancing";
         return false;
@@ -210,14 +214,14 @@ bool JSONExprEval::evaluate(const Json::Value &values)
     }
 }
 
-int JSONExprEval::detectSubExpr(string &expr)
+size_t JSONExprEval::detectSubExpr(string &expr, size_t start)
 {
     int level=0;
     bool inSubExpr = false;
 
     size_t firstByte=0;
 
-    for (size_t i=0;i<expr.size();i++)
+    for (size_t i=start;i<expr.size();i++)
     {
         if (expr.at(i) == '(')
         {
@@ -230,7 +234,7 @@ int JSONExprEval::detectSubExpr(string &expr)
         }
         else if (expr.at(i) == ')')
         {
-            if (level == 0) return -1;
+            if (level == 0) return expr.size()+1;
             level--;
             if (level==0 && inSubExpr)
             {
@@ -244,24 +248,25 @@ int JSONExprEval::detectSubExpr(string &expr)
 
                 if (firstByte>0 && isalnum(expr.at(firstByte-1)))
                 {
-                    // FUNCTION, do not replace.
+                    // FUNCTION, do not replace, next evaluation should be done after it.
+                    return i+1;
                 }
                 else if (firstByte>0 && expr.at(firstByte-1)=='!')
                 {
                     subExpressions.push_back(new JSONExprEval(subexpr,staticTexts,true));
                     boost::replace_first(expr,"!(" + subexpr + ")" ,_staticmsg);
+                    return 0;
                 }
                 else
                 {
                     subExpressions.push_back(new JSONExprEval(subexpr,staticTexts,false));
                     boost::replace_first(expr,"(" + subexpr + ")" ,_staticmsg);
+                    return 0;
                 }
-
-                return 0;
             }
         }
     }
-    return 1;
+    return expr.size();
 }
 
 std::string JSONExprEval::getLastCompilerError() const

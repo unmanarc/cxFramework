@@ -31,7 +31,7 @@ private:
      * @param expr expression string (without quotes)
      * @return -1 if failed, 0 if succeed, 1 if no more expressions
      */
-    int detectSubExpr(std::string & expr);
+    size_t detectSubExpr(std::string & expr, size_t start);
 
     std::string expression, lastError;
     std::vector<std::string> * staticTexts;
