@@ -4,6 +4,8 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string.hpp>
 
+#include <cctype>
+#include <clocale>
 
 using namespace std;
 
@@ -105,7 +107,7 @@ bool JSONExprEval::compile(std::string expr)
     }
 
     // Separate AND/OR
-    if (  expr.find(" and ") != std::string::npos &&  expr.find(" or ") != std::string::npos )
+    if (  expr.find(" && ") != std::string::npos &&  expr.find(" || ") != std::string::npos )
     {
         evalMode = EVAL_MODE_UNDEFINED;
         lastError = "Expression with both and/or and no precedence order";
@@ -114,15 +116,15 @@ bool JSONExprEval::compile(std::string expr)
     else
     {
         // split
-        if (expr.find(" and ") != std::string::npos)
+        if (expr.find(" && ") != std::string::npos)
         {
             evalMode = EVAL_MODE_AND;
-            boost::replace_all(expr," and " ,"\n");
+            boost::replace_all(expr," && " ,"\n");
         }
         else
         {
             evalMode = EVAL_MODE_OR;
-            boost::replace_all(expr," or " ,"\n");
+            boost::replace_all(expr," || " ,"\n");
         }
 
         if ( expr.find(" ") != std::string::npos )
@@ -240,7 +242,11 @@ int JSONExprEval::detectSubExpr(string &expr)
                 _staticmsg[127]=0;
                 snprintf(_staticmsg,127,"_SUBEXPR_%lu",pos);
 
-                if (firstByte>0 && expr.at(firstByte-1)=='!')
+                if (firstByte>0 && isalnum(expr.at(firstByte-1)))
+                {
+                    // FUNCTION, do not replace.
+                }
+                else if (firstByte>0 && expr.at(firstByte-1)=='!')
                 {
                     subExpressions.push_back(new JSONExprEval(subexpr,staticTexts,true));
                     boost::replace_first(expr,"!(" + subexpr + ")" ,_staticmsg);

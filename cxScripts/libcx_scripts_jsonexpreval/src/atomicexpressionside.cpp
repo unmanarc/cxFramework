@@ -50,7 +50,7 @@ void AtomicExpressionSide::setExpr(const string &value)
     expr = value;
 }
 
-set<string> AtomicExpressionSide::resolve(const Json::Value &v, bool resolveRegex)
+set<string> AtomicExpressionSide::resolve(const Json::Value &v, bool resolveRegex, bool ignoreCase)
 {
     switch (mode)
     {
@@ -69,16 +69,28 @@ set<string> AtomicExpressionSide::resolve(const Json::Value &v, bool resolveRege
             for (size_t i=0; i<result.size();i++)
                 res.insert( result[(int)i].asString() );
         }
-        return recompileRegex(res,resolveRegex);
+        return res;
     }
     case EXPR_MODE_STATIC_STRING:
+        if (resolveRegex)
+        {
+            recompileRegex((*staticTexts)[stoul(expr.substr(8))], ignoreCase);
+            return {};
+        }
+        else
+            return { (*staticTexts)[stoul(expr.substr(8))] };
     case EXPR_MODE_NUMERIC:
-        return recompileRegex({ (*staticTexts)[stoul(expr.substr(8))] },resolveRegex);
+        if (resolveRegex)
+        {
+            recompileRegex(expr, ignoreCase);
+            return {};
+        }
+        else
+            return { expr };
     case EXPR_MODE_UNDEFINED:
     default:
         return {};
     }
-
 }
 
 boost::regex *AtomicExpressionSide::getRegexp() const
@@ -96,10 +108,12 @@ eExpressionSideMode AtomicExpressionSide::getMode() const
     return mode;
 }
 
-set<string> AtomicExpressionSide::recompileRegex(const set<string> &r, bool resolveRegex)
+set<string> AtomicExpressionSide::recompileRegex(const string &r, bool ignoreCase)
 {
-    if (!resolveRegex || r.empty()) return r;
-    if (regexp) delete regexp;
-    regexp = new boost::regex(r.begin()->c_str());
-    return r;
+    if (!regexp)
+    {
+        regexp = new boost::regex(r.c_str(),
+                                  ignoreCase? (boost::regex::extended|boost::regex::icase) : (boost::regex::extended) );
+    }
+    return {};
 }

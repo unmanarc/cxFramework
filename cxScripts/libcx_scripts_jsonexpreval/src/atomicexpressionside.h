@@ -25,7 +25,7 @@ public:
     std::string getExpr() const;
     void setExpr(const std::string &value);
 
-    std::set<std::string> resolve(const Json::Value & v, bool resolveRegex);
+    std::set<std::string> resolve(const Json::Value & v, bool resolveRegex, bool ignoreCase);
 
     boost::regex *getRegexp() const;
     void setRegexp(boost::regex *value);
@@ -33,7 +33,7 @@ public:
     eExpressionSideMode getMode() const;
 
 private:
-    std::set<std::string> recompileRegex(const std::set<std::string> & r, bool resolveRegex);
+    std::set<std::string> recompileRegex(const std::string & r, bool ignoreCase);
 
 
     boost::regex * regexp;

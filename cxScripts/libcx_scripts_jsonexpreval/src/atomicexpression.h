@@ -8,13 +8,10 @@
 #include "atomicexpressionside.h"
 
 enum eEvalOperator {
-    EVAL_OPERATOR_CONTAIN, // operator for multi items..
-    EVAL_OPERATOR_CONTAIN_ICASE, // operator for multi items..
-    EVAL_OPERATOR_REGEX,
-    EVAL_OPERATOR_EQUAL,
-    EVAL_OPERATOR_EQUAL_ICASE,
+    EVAL_OPERATOR_CONTAINS, // operator for multi items..
+    EVAL_OPERATOR_REGEXMATCH,
+    EVAL_OPERATOR_ISEQUAL,
     EVAL_OPERATOR_STARTSWITH,
-    EVAL_OPERATOR_STARTSWITH_ICASE,
     EVAL_OPERATOR_UNDEFINED
 };
 
@@ -36,7 +33,7 @@ private:
     std::string expr;
     AtomicExpressionSide left,right;
     eEvalOperator evalOperator;
-    bool negativeExpression;
+    bool negativeExpression, ignoreCase;
 
 };
 
