@@ -22,6 +22,7 @@ SUBDIRS+=libcx_net_poolthreadedacceptor
 # Project folders:
 libcx_net_poolthreadedacceptor.subdir    = libcx_net_poolthreadedacceptor
 libcx_net_poolthreadedacceptor.depends   = libcx_net_sockets
+libcx_net_poolthreadedacceptor.depends   = libcx_net_tls
 
 # Network Interface configuration
 SUBDIRS+=libcx_net_ifcfg
