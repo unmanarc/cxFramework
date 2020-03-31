@@ -16,6 +16,7 @@ SUBDIRS += libcx_mem_containers
 # Project folders:
 libcx_mem_containers.subdir    = libcx_mem_containers
 libcx_mem_containers.depends   = libcx_mem_streams
+libcx_mem_containers.depends   = libcx_mem_abstracts
 
 # Vars:
 SUBDIRS += libcx_mem_vars
