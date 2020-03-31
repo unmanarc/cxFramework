@@ -1,6 +1,5 @@
 #include "poolthreadedacceptor.h"
 #include <string.h>
-#include <cx_net_tls/socket_tls.h>
 
 struct sAcceptorTaskData
 {
