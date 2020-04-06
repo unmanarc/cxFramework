@@ -56,8 +56,7 @@ std::pair<bool, uint64_t> BinaryContainer_MEM::findChar(const int &c, const uint
 
     if (!cPos) return std::make_pair(false,(uint64_t)0);
 
-    const ptrdiff_t bytepos = cPos-linearMem;
-    return std::make_pair(true,bytepos);
+    return std::make_pair(true,uint64_t(cPos-linearMem));
 }
 
 std::pair<bool, uint64_t> BinaryContainer_MEM::truncate2(const uint64_t &bytes)

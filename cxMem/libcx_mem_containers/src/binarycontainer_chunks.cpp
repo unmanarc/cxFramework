@@ -512,8 +512,7 @@ std::pair<bool, uint64_t> BinaryContainer_Chunks::findChar(const int &c, const u
             if (pos)
             {
                 // report the position.
-                const ptrdiff_t bytepos = pos-(originalChunk->data);
-                return std::make_pair(true,bytepos+retpos);
+                return std::make_pair(true,(uint64_t)(pos-(originalChunk->data))+retpos);
             }
 
             if (searchSpace>currentChunk.size)
