@@ -45,13 +45,13 @@ public:
     /**
      * @brief push Push a new item
      * @param item item to be pushed to the queue
-     * @param tmout_msecs Timeout in milliseconds if the queue is full (default: 100 seconds)
+     * @param tmout_msecs Timeout in milliseconds if the queue is full (default: 100 seconds), or zero if you don't want to wait
      * @return
      */
     bool push(T * item ,const uint32_t & tmout_msecs = 100000);
     /**
      * @brief pop Pop the item, you should delete/remove it after using "destroyItem" function
-     * @param tmout_msecs Timeout in milliseconds if the queue is empty (default: 100 seconds)
+     * @param tmout_msecs Timeout in milliseconds if the queue is empty (default: 100 seconds), or zero if you don't want to wait
      * @return the first item in the queue
      */
     T * pop(const uint32_t & tmout_msecs = 100000);
@@ -95,6 +95,8 @@ bool TS_Queue<T>::push(T *item, const uint32_t &tmout_msecs)
     std::unique_lock<std::mutex> lock(mQueue);
     while (_queue.size()>=*maxItems)
     {
+        if ( tmout_msecs == 0 )
+            return false;
         if (condNotFull.wait_for(lock, std::chrono::milliseconds(tmout_msecs)) == std::cv_status::timeout)
             return false;
     }
@@ -110,6 +112,8 @@ T *TS_Queue<T>::pop(const uint32_t &tmout_msecs)
     std::unique_lock<std::mutex> lock(mQueue);
     while (_queue.empty())
     {
+        if ( tmout_msecs == 0 )
+            return nullptr;
         if (condNotEmpty.wait_for(lock, std::chrono::milliseconds(tmout_msecs)) == std::cv_status::timeout)
             return nullptr;
     }
