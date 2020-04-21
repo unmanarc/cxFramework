@@ -46,6 +46,10 @@ bool AtomicExpression::compile(std::string expr)
     {
         evalOperator=EVAL_OPERATOR_STARTSWITH;
     }
+    else if (substractExpressions("^ENDS_WITH\\((?<LEFT_EXPR>[^,]+),(?<RIGHT_EXPR>[^\\)]+)\\)$"))
+    {
+        evalOperator=EVAL_OPERATOR_ENDSWITH;
+    }
     else
     {
         evalOperator=EVAL_OPERATOR_UNDEFINED;
@@ -65,6 +69,22 @@ bool AtomicExpression::evaluate(const Json::Value &values)
     {
     case EVAL_OPERATOR_UNDEFINED:
         return calcNegative(false);
+    case EVAL_OPERATOR_ENDSWITH:
+        for ( const std::string & lvalue : lvalues  )
+        {
+            for ( const std::string & rvalue : rvalues  )
+            {
+                if ( ignoreCase && boost::iends_with(lvalue,rvalue) )
+                {
+                    return calcNegative(true);
+                }
+                else if ( !ignoreCase && boost::ends_with(lvalue,rvalue) )
+                {
+                    return calcNegative(true);
+                }
+            }
+        }
+        return calcNegative( false );
     case EVAL_OPERATOR_STARTSWITH:
         for ( const std::string & lvalue : lvalues  )
         {
