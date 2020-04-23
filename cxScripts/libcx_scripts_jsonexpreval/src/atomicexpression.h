@@ -13,6 +13,7 @@ enum eEvalOperator {
     EVAL_OPERATOR_ISEQUAL,
     EVAL_OPERATOR_STARTSWITH,
     EVAL_OPERATOR_ENDSWITH,
+    EVAL_OPERATOR_ISNULL,
     EVAL_OPERATOR_UNDEFINED
 };
 
@@ -28,7 +29,7 @@ public:
 
 private:
     bool calcNegative(bool r);
-    bool substractExpressions(const std::string &regex);
+    bool substractExpressions(const std::string &regex, const eEvalOperator & op);
 
     std::vector<std::string> *staticTexts;
     std::string expr;

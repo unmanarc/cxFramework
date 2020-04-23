@@ -20,11 +20,7 @@ AtomicExpressionSide::~AtomicExpressionSide()
 
 bool AtomicExpressionSide::calcMode()
 {
-    if (!expr.size())
-    {
-        mode=EXPR_MODE_UNDEFINED;
-        return false;
-    }
+    if (expr.empty()) mode=EXPR_MODE_NULL;
     else if ( expr.at(0)=='$') mode=EXPR_MODE_JSONPATH;
     else if ( expr.find_first_not_of("0123456789") == string::npos ) mode=EXPR_MODE_NUMERIC;
     else if ( boost::starts_with(expr,"_STATIC_") && staticTexts->size() > stoul(expr.substr(8)))
@@ -88,6 +84,7 @@ set<string> AtomicExpressionSide::resolve(const Json::Value &v, bool resolveRege
         }
         else
             return { expr };
+    case EXPR_MODE_NULL:
     case EXPR_MODE_UNDEFINED:
     default:
         return {};

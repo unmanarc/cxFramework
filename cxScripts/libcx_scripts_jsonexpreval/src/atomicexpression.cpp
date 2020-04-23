@@ -30,25 +30,23 @@ bool AtomicExpression::compile(std::string expr)
     }
     this->expr = expr;
 
-    if (substractExpressions("^IS_EQUAL\\((?<LEFT_EXPR>[^,]+),(?<RIGHT_EXPR>[^\\)]+)\\)$"))
+    if (substractExpressions("^IS_EQUAL\\(\\ *(?<LEFT_EXPR>[^,\\ ]+)\\ *,\\ *(?<RIGHT_EXPR>[^\\)\\ ]+)\\ *\\)$",EVAL_OPERATOR_ISEQUAL))
     {
-        evalOperator=EVAL_OPERATOR_ISEQUAL;
     }
-    else if (substractExpressions("^REGEX_MATCH\\((?<LEFT_EXPR>[^,]+),(?<RIGHT_EXPR>[^\\)]+)\\)$"))
+    else if (substractExpressions("^REGEX_MATCH\\(\\ *(?<LEFT_EXPR>[^,\\ ]+)\\ *,\\ *(?<RIGHT_EXPR>[^\\)\\ ]+)\\ *\\)$",EVAL_OPERATOR_REGEXMATCH))
     {
-        evalOperator=EVAL_OPERATOR_REGEXMATCH;
     }
-    else if (substractExpressions("^CONTAINS\\((?<LEFT_EXPR>[^,]+),(?<RIGHT_EXPR>[^\\)]+)\\)$"))
+    else if (substractExpressions("^CONTAINS\\(\\ *(?<LEFT_EXPR>[^,\\ ]+)\\ *,\\ *(?<RIGHT_EXPR>[^\\)\\ ]+)\\ *\\)$",EVAL_OPERATOR_CONTAINS))
     {
-        evalOperator=EVAL_OPERATOR_CONTAINS;
     }
-    else if (substractExpressions("^STARTS_WITH\\((?<LEFT_EXPR>[^,]+),(?<RIGHT_EXPR>[^\\)]+)\\)$"))
+    else if (substractExpressions("^STARTS_WITH\\(\\ *(?<LEFT_EXPR>[^,\\ ]+)\\ *,\\ *(?<RIGHT_EXPR>[^\\)\\ ]+)\\ *\\)$",EVAL_OPERATOR_STARTSWITH))
     {
-        evalOperator=EVAL_OPERATOR_STARTSWITH;
     }
-    else if (substractExpressions("^ENDS_WITH\\((?<LEFT_EXPR>[^,]+),(?<RIGHT_EXPR>[^\\)]+)\\)$"))
+    else if (substractExpressions("^ENDS_WITH\\(\\ *(?<LEFT_EXPR>[^,\\ ]+)\\ *,\\ *(?<RIGHT_EXPR>[^\\)\\ ]+)\\ *\\)$",EVAL_OPERATOR_ENDSWITH))
     {
-        evalOperator=EVAL_OPERATOR_ENDSWITH;
+    }
+    else if (substractExpressions("^IS_NULL\\(\\ *(?<RIGHT_EXPR>[^\\)\\ ]+)\\ *\\)$",EVAL_OPERATOR_ISNULL))
+    {
     }
     else
     {
@@ -116,6 +114,8 @@ bool AtomicExpression::evaluate(const Json::Value &values)
             }
         }
         return calcNegative(false);
+    case EVAL_OPERATOR_ISNULL:
+        return calcNegative(lvalues.empty());
     case EVAL_OPERATOR_CONTAINS:
         for ( const std::string & lvalue : lvalues  )
         {
@@ -153,7 +153,7 @@ bool AtomicExpression::calcNegative(bool r)
     return r;
 }
 
-bool AtomicExpression::substractExpressions(const std::string &regex)
+bool AtomicExpression::substractExpressions(const std::string &regex, const eEvalOperator &op)
 {
     boost::regex exOperatorEqual(regex);
     boost::match_results<string::const_iterator> whatDataDecomposed;
@@ -164,13 +164,17 @@ bool AtomicExpression::substractExpressions(const std::string &regex)
          start = whatDataDecomposed[0].second)
     {
         left.setExpr(string(whatDataDecomposed[1].first, whatDataDecomposed[1].second));
-        right.setExpr(string(whatDataDecomposed[2].first, whatDataDecomposed[2].second));
+        if ( op!=EVAL_OPERATOR_ISNULL )
+            right.setExpr(string(whatDataDecomposed[2].first, whatDataDecomposed[2].second));
+        else
+            right.setExpr("");
 
         if (!left.calcMode())
             return false;
         if (!right.calcMode())
             return false;
 
+        evalOperator=EVAL_OPERATOR_ISEQUAL;
         return true;
     }
     return false;
