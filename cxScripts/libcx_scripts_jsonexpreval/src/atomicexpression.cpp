@@ -23,7 +23,7 @@ bool AtomicExpression::compile(std::string expr)
         negativeExpression=true;
         expr = expr.substr(1);
     }
-    if (boost::starts_with(expr,"I"))
+    if (boost::starts_with(expr,"i"))
     {
         ignoreCase=true;
         expr = expr.substr(1);
