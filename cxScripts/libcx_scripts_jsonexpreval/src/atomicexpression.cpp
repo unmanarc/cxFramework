@@ -30,22 +30,22 @@ bool AtomicExpression::compile(std::string expr)
     }
     this->expr = expr;
 
-    if (substractExpressions("^IS_EQUAL\\(\\ *(?<LEFT_EXPR>[^,\\ ]+)\\ *,\\ *(?<RIGHT_EXPR>[^\\)\\ ]+)\\ *\\)$",EVAL_OPERATOR_ISEQUAL))
+    if (substractExpressions("^IS_EQUAL\\((?<LEFT_EXPR>[^,]+),(?<RIGHT_EXPR>[^\\)]+)\\)$",EVAL_OPERATOR_ISEQUAL))
     {
     }
-    else if (substractExpressions("^REGEX_MATCH\\(\\ *(?<LEFT_EXPR>[^,\\ ]+)\\ *,\\ *(?<RIGHT_EXPR>[^\\)\\ ]+)\\ *\\)$",EVAL_OPERATOR_REGEXMATCH))
+    else if (substractExpressions("^REGEX_MATCH\\((?<LEFT_EXPR>[^,]+),(?<RIGHT_EXPR>[^\\)]+)\\)$",EVAL_OPERATOR_REGEXMATCH))
     {
     }
-    else if (substractExpressions("^CONTAINS\\(\\ *(?<LEFT_EXPR>[^,\\ ]+)\\ *,\\ *(?<RIGHT_EXPR>[^\\)\\ ]+)\\ *\\)$",EVAL_OPERATOR_CONTAINS))
+    else if (substractExpressions("^CONTAINS\\((?<LEFT_EXPR>[^,]+),(?<RIGHT_EXPR>[^\\)]+)\\)$",EVAL_OPERATOR_CONTAINS))
     {
     }
-    else if (substractExpressions("^STARTS_WITH\\(\\ *(?<LEFT_EXPR>[^,\\ ]+)\\ *,\\ *(?<RIGHT_EXPR>[^\\)\\ ]+)\\ *\\)$",EVAL_OPERATOR_STARTSWITH))
+    else if (substractExpressions("^STARTS_WITH\\((?<LEFT_EXPR>[^,]+),(?<RIGHT_EXPR>[^\\)]+)\\)$",EVAL_OPERATOR_STARTSWITH))
     {
     }
-    else if (substractExpressions("^ENDS_WITH\\(\\ *(?<LEFT_EXPR>[^,\\ ]+)\\ *,\\ *(?<RIGHT_EXPR>[^\\)\\ ]+)\\ *\\)$",EVAL_OPERATOR_ENDSWITH))
+    else if (substractExpressions("^ENDS_WITH\\((?<LEFT_EXPR>[^,]+),(?<RIGHT_EXPR>[^\\)]+)\\)$",EVAL_OPERATOR_ENDSWITH))
     {
     }
-    else if (substractExpressions("^IS_NULL\\(\\ *(?<RIGHT_EXPR>[^\\)\\ ]+)\\ *\\)$",EVAL_OPERATOR_ISNULL))
+    else if (substractExpressions("^IS_NULL\\((?<RIGHT_EXPR>[^\\)]+)\\)$",EVAL_OPERATOR_ISNULL))
     {
     }
     else
