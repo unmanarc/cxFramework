@@ -174,7 +174,7 @@ bool AtomicExpression::substractExpressions(const std::string &regex, const eEva
         if (!right.calcMode())
             return false;
 
-        evalOperator=EVAL_OPERATOR_ISEQUAL;
+        evalOperator=op;
         return true;
     }
     return false;
