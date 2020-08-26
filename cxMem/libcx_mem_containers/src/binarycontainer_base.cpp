@@ -713,7 +713,7 @@ uint64_t BinaryContainer_Base::copyToSOUsingCleanVector(StreamableObject &bc, st
     for (size_t i=0; i<copyChunks.size();i++)
     {
         WRStatus cur;
-        if ( !(cur = bc.write(copyChunks[i].rodata,copyChunks[i].rosize,wrStatUpd)).succeed || cur.bytesWritten!=copyChunks[i].size)
+        if ( !(cur = bc.write(copyChunks[i].rodata,copyChunks[i].rosize,wrStatUpd)).succeed || cur.bytesWritten!=copyChunks[i].rosize)
         {
             acum+=cur;
             return acum.bytesWritten;
